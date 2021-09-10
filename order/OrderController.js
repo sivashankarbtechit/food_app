@@ -3,6 +3,7 @@ var express       =  require('express');
     bodyparser    =  require('body-parser'),
     editJsonFile  =  require('edit-json-file'),
     conf          =  editJsonFile(__root +"src/config.json"),
+    VerifyToken   =  require(__root +"src/VerifyToken.js"),
     Order         =  __db_model.Order;
     Food          =  __db_model.Food;
     Ingredients   =  __db_model.Ingredients;
@@ -11,7 +12,7 @@ var express       =  require('express');
 router.use(bodyparser.json());
 
 // CREATE ORDER
-router.post("/order",function(req,res){
+router.post("/order",VerifyToken,function(req,res){
     var order_datas = req.body;
     Order.create(order_datas).then(function(data){
        res.status(200).send("Order Created Successfully")
@@ -23,7 +24,7 @@ router.post("/order",function(req,res){
 
  //GET ALL ORDERS USER
 
- router.get("/list/:user_id",function(req,res){
+ router.get("/list/:user_id",VerifyToken,function(req,res){
     console.log("req.params",req.params)
     Order.findAll({raw:true,where:{user_id:req.params.user_id}}).then(function(data){
        res.status(200).send(data);

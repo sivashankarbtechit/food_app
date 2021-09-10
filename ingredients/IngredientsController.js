@@ -3,6 +3,7 @@ var express       =  require('express');
     bodyparser    =  require('body-parser'),
     editJsonFile  =  require('edit-json-file'),
     conf          =  editJsonFile(__root +"src/config.json"),
+    VerifyToken   =  require(__root +"src/VerifyToken.js"),
     Order         =  __db_model.Order;
     Food          =  __db_model.Food;
     Ingredients   =  __db_model.Ingredients;
@@ -13,7 +14,7 @@ router.use(bodyparser.json());
 
  //GET INGREDIENTS WHOSE LESS
 
- router.get("/lt",function(req,res){
+ router.get("/lt",VerifyToken,function(req,res){
     Ingredients.findAll({raw:true,where: {
         availablequantity: {
             [Op.lt]: Sequelize.col('thresholdquantity')
@@ -28,7 +29,7 @@ router.use(bodyparser.json());
 
 //Vendor 
 
- router.get("/:vendor",function(req,res){
+ router.get("/:vendor",VerifyToken,function(req,res){
     Ingredients.findAll({raw:true,where: { vendorname : req.params.vendor}}).then(function(data){
        res.status(200).send(data);
     }, function(err){
@@ -41,7 +42,7 @@ router.use(bodyparser.json());
  //
 
 
- router.get("/list/gt",function(req,res){
+ router.get("/list/gt",VerifyToken,function(req,res){
    Food.findAll({raw:true,where: {
       costofproduction: {
            [Op.gt]: Sequelize.col('sellingcost')

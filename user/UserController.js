@@ -4,6 +4,7 @@ var express       =  require('express');
     editJsonFile  =  require('edit-json-file'),
     bcrypt        =  require('bcryptjs'),
     jwt           =  require('jsonwebtoken'),
+    VerifyToken   =  require(__root +"src/VerifyToken.js"),
     conf          =  editJsonFile(__root +"src/config.json"),
     User          =  __db_model.User;
 
@@ -56,7 +57,7 @@ router.post("/login",function(req,res){
 
 //Update User Password 
 
-router.put("/updatepassword",function(req,res){
+router.put("/updatepassword",VerifyToken,function(req,res){
    var req_body = req.body;
    User.findOne({raw:true,where:{user_id:req.body.user_id}}).then(function(data){
         var validPassword =  bcrypt.compareSync(req_body.password, data.password);
@@ -81,9 +82,9 @@ router.put("/updatepassword",function(req,res){
 
 //Update status
 
-router.put("/updatestatus",function(req,res){
+router.put("/updatestatus",VerifyToken,function(req,res){
    User.update(req.body,{where:{user_id:req.body.user_id}}).then(function(data){
-      res.status(200).send("updated Successfully");
+      res.status(200).send("User Status Updated Successfully");
    }, function(err){
       console.log("err",err)
       res.status(500).send(" Problem In Update User Status ");
